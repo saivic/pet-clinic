@@ -4,7 +4,7 @@ ALTER DATABASE petclinic
   DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
-GRANT ALL PRIVILEGES ON petclinic.* TO pc@localhost IDENTIFIED BY 'pc';
+-- GRANT ALL PRIVILEGES ON petclinic.* TO pc@localhost IDENTIFIED BY 'pc';
 
 USE petclinic;
 
@@ -79,4 +79,17 @@ CREATE TABLE IF NOT EXISTS roles (
   UNIQUE KEY uni_username_role (role,username),
   KEY fk_username_idx (username),
   CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES users (username)
+) engine=InnoDB;
+
+-- create table pet_treatments with foreign keys to pets and vets
+CREATE TABLE IF NOT EXISTS pet_treatments (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  pet_id INT(4) UNSIGNED NOT NULL,
+  vet_id INT(4) UNSIGNED NOT NULL,
+  treatment_date DATE,
+  description VARCHAR(255),
+  specialty_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (pet_id) REFERENCES pets(id),
+  FOREIGN KEY (vet_id) REFERENCES vets(id),
+  FOREIGN KEY (specialty_id) REFERENCES specialties(id)
 ) engine=InnoDB;

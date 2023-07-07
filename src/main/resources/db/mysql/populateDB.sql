@@ -57,3 +57,10 @@ INSERT IGNORE INTO users(username,password,enabled) VALUES ('admin','{noop}admin
 INSERT IGNORE INTO roles (username, role) VALUES ('admin', 'ROLE_OWNER_ADMIN');
 INSERT IGNORE INTO roles (username, role) VALUES ('admin', 'ROLE_VET_ADMIN');
 INSERT IGNORE INTO roles (username, role) VALUES ('admin', 'ROLE_ADMIN');
+
+
+-- insert values into pet_treatments table for column id, pet_id, vet_id, treatment_date, description, specialty_id
+INSERT IGNORE INTO pet_treatments VALUES (1, 1, 5, '2010-03-04', 'rabies shot', 1);
+INSERT IGNORE INTO pet_treatments VALUES (2, 2, 2, '2011-03-04', 'rabies shot', 1);
+INSERT IGNORE INTO pet_treatments VALUES (3, 3, 3, '2009-06-04', 'neutered', 2);
+INSERT IGNORE INTO pet_treatments VALUES (4, 4, 4, '2008-09-04', 'spayed', 2);
