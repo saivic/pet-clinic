@@ -15,12 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true) // Enable @PreAuthorize method-level security
+// @EnableGlobalMethodSecurity(prePostEnabled = true) // Enable @PreAuthorize method-level security
 @ConditionalOnProperty(name = "petclinic.security.enable", havingValue = "true")
 public class BasicAuthenticationConfig  {
 
-    @Autowired
-    private DataSource dataSource;
+    // @Autowired
+    // private DataSource dataSource;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -29,7 +29,7 @@ public class BasicAuthenticationConfig  {
             .authorizeHttpRequests((authz) -> authz
                 .anyRequest().authenticated()
                 )
-                .httpBasic()
+                .oauth2Login()
                     .and()
                 .csrf()
                     .disable();
@@ -37,14 +37,14 @@ public class BasicAuthenticationConfig  {
         return http.build();
     }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // @formatter:off
-        auth
-            .jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery("select username,password,enabled from users where username=?")
-                .authoritiesByUsernameQuery("select username,role from roles where username=?");
-        // @formatter:on
-    }
+    // @Autowired
+    // public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    //     // @formatter:off
+    //     auth
+    //         .jdbcAuthentication()
+    //             .dataSource(dataSource)
+    //             .usersByUsernameQuery("select username,password,enabled from users where username=?")
+    //             .authoritiesByUsernameQuery("select username,role from roles where username=?");
+    //     // @formatter:on
+    // }
 }
