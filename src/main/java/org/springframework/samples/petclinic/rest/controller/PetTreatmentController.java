@@ -5,6 +5,7 @@ package org.springframework.samples.petclinic.rest.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.samples.petclinic.service.PetTreatmentService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/pettreatments")
 public class PetTreatmentController {
 
@@ -36,6 +38,12 @@ public class PetTreatmentController {
         List<PetTreatmentDto> petTreatmentDtos = petTreatments.stream()
                 .map(petTreatmentMapper::petTreatmentToPetTreatmentDto).collect(Collectors.toList());
         return new ResponseEntity<>(petTreatmentDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/async")
+    public CompletableFuture<ResponseEntity<List<PetTreatmentDto>>> getAllPetTreatmentsAsync() throws TreatmentNotFoundException {
+        return CompletableFuture.completedFuture(new ResponseEntity<>(petTreatmentService.findAllPetTreatments().stream()
+                .map(petTreatmentMapper::petTreatmentToPetTreatmentDto).collect(Collectors.toList()), HttpStatus.OK));
     }
 
     @GetMapping("/{id}")

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.PetTreatment;
@@ -33,6 +34,16 @@ public class PetTreatmentServiceImpl implements PetTreatmentService {
             throw new TreatmentNotFoundException();
         }
         return petTreatments;
+    }
+
+    @Override
+    public CompletableFuture<List<PetTreatment>> findAllPetTreatmentsAsync() {
+        //throw TreatmentNotFoundException if list is empty
+        List<PetTreatment> petTreatments = petTreatmentRepo.findAll();
+        if (petTreatments.isEmpty()) {
+            throw new TreatmentNotFoundException();
+        }
+        return CompletableFuture.completedFuture(petTreatments);
     }
 
     @Override
@@ -116,7 +127,7 @@ public class PetTreatmentServiceImpl implements PetTreatmentService {
         List<PetTreatment> scheduledTreatments = scheduleTreatmentRequest();
         return scheduledTreatments;
     }
-    
+
 
     private SpringDataVetRepository vetRepo;
 
@@ -140,5 +151,5 @@ public class PetTreatmentServiceImpl implements PetTreatmentService {
         }
         return scheduledTreatments;
     }
-    
+
 }

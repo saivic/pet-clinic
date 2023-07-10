@@ -4,6 +4,7 @@ package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.samples.petclinic.model.PetTreatment;
 
@@ -11,6 +12,7 @@ public interface PetTreatmentService {
 
     List<PetTreatment> findAllPetTreatments();
 
+    CompletableFuture<List<PetTreatment>> findAllPetTreatmentsAsync();
     PetTreatment findPetTreatmentById(int id);
 
     List<PetTreatment> findPetTreatmentsByPetId(int petId);

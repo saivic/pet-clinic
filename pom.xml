@@ -37,6 +37,13 @@
     </properties>
 
     <dependencies>
+    <!-- dependency for jasypt 3.0.5 -->
+    <dependency>
+        <groupId>com.github.ulisesbocchio</groupId>
+        <artifactId>jasypt-spring-boot-starter</artifactId>
+        <version>3.0.5</version>
+    </dependency>
+
     <!-- starter dependency for oauth2 client -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -167,6 +174,14 @@
 
     <build>
         <plugins>
+        <!-- jasypt maven plugin 3.0.5 -->
+            <plugin>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-maven-plugin</artifactId>
+                <version>3.0.5</version>
+            </plugin>
+
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
