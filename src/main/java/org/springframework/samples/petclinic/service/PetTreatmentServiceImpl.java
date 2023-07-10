@@ -2,11 +2,18 @@ package org.springframework.samples.petclinic.service;
 
 //class implements the PetTreatmentService interface
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.PetTreatment;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.repository.springdatajpa.SpringDataPetTreatmentRepository;
+import org.springframework.samples.petclinic.repository.springdatajpa.SpringDataSpecialtyRepository;
+import org.springframework.samples.petclinic.repository.springdatajpa.SpringDataVetRepository;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import org.springframework.samples.petclinic.exception.TreatmentNotFoundException;
@@ -16,6 +23,7 @@ public class PetTreatmentServiceImpl implements PetTreatmentService {
 
     @Autowired
     private SpringDataPetTreatmentRepository petTreatmentRepo;
+
 
     @Override
     public List<PetTreatment> findAllPetTreatments() {
@@ -99,4 +107,38 @@ public class PetTreatmentServiceImpl implements PetTreatmentService {
         petTreatmentRepo.delete(petTreatment);
     }
 
+    Queue<PetTreatment> treatmentQueue = new LinkedList<PetTreatment>();
+
+    //method to add treatment to queue and call the processTreatmentRequest method
+    @Override
+    public List<PetTreatment> addTreatmentToQueue(PetTreatment petTreatment) {
+        treatmentQueue.add(petTreatment);
+        List<PetTreatment> scheduledTreatments = scheduleTreatmentRequest();
+        return scheduledTreatments;
+    }
+    
+
+    private SpringDataVetRepository vetRepo;
+
+    //mthod to find all available vets
+    public List<Vet> findAllAvailableVets() {
+        List<Vet> availableVets = (List<Vet>) vetRepo.findAll();
+        return availableVets;
+    }
+
+    //method implementing fcfs algorithm to schedule a particular treatment request based on available vets
+    public List<PetTreatment> scheduleTreatmentRequest() {
+        List<PetTreatment> scheduledTreatments = new ArrayList<PetTreatment>();
+        List<Vet> availableVets = findAllAvailableVets();
+        while (!treatmentQueue.isEmpty() && !availableVets.isEmpty()) {
+            PetTreatment treatment = treatmentQueue.poll();
+            Vet vet = availableVets.get(0);
+            treatment.setVet(vet);
+            scheduledTreatments.add(treatment);
+            Vet assignedVet = availableVets.remove(0);
+            availableVets.add(assignedVet);
+        }
+        return scheduledTreatments;
+    }
+    
 }

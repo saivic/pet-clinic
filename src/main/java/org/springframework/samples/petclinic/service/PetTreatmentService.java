@@ -27,4 +27,6 @@ public interface PetTreatmentService {
 
     void deletePetTreatment(PetTreatment petTreatment);
 
+    List<PetTreatment> addTreatmentToQueue(PetTreatment petTreatment);
+
 }

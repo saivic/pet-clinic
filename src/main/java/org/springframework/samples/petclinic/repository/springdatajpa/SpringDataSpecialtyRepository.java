@@ -30,4 +30,6 @@ import org.springframework.samples.petclinic.repository.SpecialtyRepository;
 @Profile("spring-data-jpa")
 public interface SpringDataSpecialtyRepository extends SpecialtyRepository, Repository<Specialty, Integer>, SpecialtyRepositoryOverride {
 
+    Specialty findSpecialtyByName(String speciltyName);
+
 }

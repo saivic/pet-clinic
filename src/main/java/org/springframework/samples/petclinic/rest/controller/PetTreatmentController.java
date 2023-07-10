@@ -109,4 +109,13 @@ public class PetTreatmentController {
         return new ResponseEntity<>(petTreatmentDtos, HttpStatus.OK);
     }
 
+    //add post mapping for adding a new pet trearment request using addTreatmentToQueue method
+    @PostMapping("/addtreatment")
+    public ResponseEntity<List<PetTreatment>> addTreatmentToQueue(@RequestBody PetTreatment petTreatment) {
+        List<PetTreatment> scheduledTreatments = petTreatmentService.addTreatmentToQueue(petTreatment);
+        if (scheduledTreatments.isEmpty()) {
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(scheduledTreatments ,HttpStatus.CREATED);
+    }
 }
