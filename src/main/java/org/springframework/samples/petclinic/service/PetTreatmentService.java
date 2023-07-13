@@ -25,9 +25,9 @@ public interface PetTreatmentService {
 
     List<PetTreatment> findPetTreatmentsByPetIdAndDateRange(int petId, LocalDate startDate, LocalDate endDate);
 
-    void savePetTreatment(PetTreatment petTreatment);
+    PetTreatment savePetTreatment(PetTreatment petTreatment);
 
-    void deletePetTreatment(PetTreatment petTreatment);
+    void deletePetTreatment(int petTreatmentId);
 
     List<PetTreatment> addTreatmentToQueue(PetTreatment petTreatment);
 

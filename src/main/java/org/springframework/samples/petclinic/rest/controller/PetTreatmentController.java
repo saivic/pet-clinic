@@ -9,14 +9,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.dto.PetTreatmentDto;
 import org.springframework.samples.petclinic.exception.TreatmentNotFoundException;
 import org.springframework.samples.petclinic.mapper.PetTreatmentMapper;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetTreatment;
+import org.springframework.samples.petclinic.model.Specialty;
+import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.rest.dto.VetDto;
 import org.springframework.samples.petclinic.service.PetTreatmentService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -117,13 +123,47 @@ public class PetTreatmentController {
         return new ResponseEntity<>(petTreatmentDtos, HttpStatus.OK);
     }
 
-    //add post mapping for adding a new pet trearment request using addTreatmentToQueue method
-    @PostMapping("/addtreatment")
-    public ResponseEntity<List<PetTreatment>> addTreatmentToQueue(@RequestBody PetTreatment petTreatment) {
-        List<PetTreatment> scheduledTreatments = petTreatmentService.addTreatmentToQueue(petTreatment);
-        if (scheduledTreatments.isEmpty()) {
+    //method for savePetTreatment in PetTreatmentService
+    @PostMapping
+    public ResponseEntity<PetTreatmentDto> savePetTreatment(@RequestBody PetTreatmentDto petTreatmentDto) {
+        HttpHeaders headers = new HttpHeaders();
+        PetTreatment petTreatment = petTreatmentMapper.petTreatmentDtoToPetTreatment(petTreatmentDto);
+        this.petTreatmentService.savePetTreatment(petTreatment);
+        headers.setLocation(UriComponentsBuilder.newInstance().path("/api/pettreatments/{id}").buildAndExpand(petTreatment.getId()).toUri());
+        return new ResponseEntity<>(petTreatmentMapper.petTreatmentToPetTreatmentDto(petTreatment), headers, HttpStatus.CREATED);
+    }
+
+    //method for updatePetTreatment in PetTreatmentService
+    @PutMapping("/{id}")
+    public ResponseEntity<PetTreatmentDto> updatePetTreatment(@PathVariable int id,
+            @RequestBody PetTreatmentDto petTreatmentDto) throws TreatmentNotFoundException {
+        PetTreatment petTreatment = petTreatmentService.findPetTreatmentById(id);
+        if (petTreatment == null) {
             new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(scheduledTreatments ,HttpStatus.CREATED);
+        petTreatment.setDescription(petTreatmentDto.getDescription());
+        petTreatment.setTreatmentDate(petTreatmentDto.getTreatmentDate());
+        petTreatmentService.savePetTreatment(petTreatment);
+        return new ResponseEntity<>(petTreatmentMapper.petTreatmentToPetTreatmentDto(petTreatment), HttpStatus.OK);
+    }
+
+    //method for deletePetTreatment in PetTreatmentService
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePetTreatment(@PathVariable int id) throws TreatmentNotFoundException {
+        PetTreatment petTreatment = petTreatmentService.findPetTreatmentById(id);
+        if (petTreatment == null) {
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        petTreatmentService.deletePetTreatment(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    //add post mapping for adding a new pet trearment request using addTreatmentToQueue method
+    @PostMapping("/addtreatment")
+    public ResponseEntity<List<PetTreatmentDto>> addTreatmentToQueue(@RequestBody PetTreatmentDto petTreatmentDto) {
+        HttpHeaders headers = new HttpHeaders();
+        PetTreatment petTreatment = petTreatmentMapper.petTreatmentDtoToPetTreatment(petTreatmentDto);
+        List<PetTreatment> schedule =  this.petTreatmentService.addTreatmentToQueue(petTreatment);
+        return new ResponseEntity<>(petTreatmentMapper.petTreatmentToPetTreatmentDto(schedule), headers, HttpStatus.CREATED);
     }
 }

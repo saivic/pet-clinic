@@ -109,12 +109,17 @@ public class PetTreatmentServiceImpl implements PetTreatmentService {
     }
 
     @Override
-    public void savePetTreatment(PetTreatment petTreatment) {
-        petTreatmentRepo.save(petTreatment);
+    public PetTreatment savePetTreatment(PetTreatment petTreatment) {
+        return petTreatmentRepo.save(petTreatment);
     }
 
     @Override
-    public void deletePetTreatment(PetTreatment petTreatment) {
+    public void deletePetTreatment(int petTreatmentId) {
+        //throw TreatmentNotFoundException if list is empty
+        PetTreatment petTreatment = petTreatmentRepo.findPetTreatmentById(petTreatmentId);
+        if (petTreatment == null) {
+            throw new TreatmentNotFoundException();
+        }
         petTreatmentRepo.delete(petTreatment);
     }
 
@@ -128,7 +133,7 @@ public class PetTreatmentServiceImpl implements PetTreatmentService {
         return scheduledTreatments;
     }
 
-
+    @Autowired
     private SpringDataVetRepository vetRepo;
 
     //mthod to find all available vets
