@@ -1,0 +1,46 @@
+# docker compose file with following services
+# MYSQL database server (db) version 8.0.33 with image name mysql:8.0.33
+# petclinic application (petclinic) image name spring-petclinic-rest:3.0.2
+# port 9966 on host should be mapped to port 9966 on container
+# add environment variable MYSQL_DATABASE=petclinic to petclinic service
+# add environment variable MYSQL_USER=petclinic to petclinic service
+# add environment variable MYSQL_PASSWORD=petclinic to petclinic service
+# add environment variable JASYPT_ENCRYPTOR_PASSWORD=petclinic to petclinic service
+# put the service in a custom network called petclinic-network
+# use version 3.8 for docker compose file
+# petclinic service should wait for db service to be ready before starting
+# restart petclinic service 5 times in case of failure
+
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0.28
+    environment:
+      MYSQL_DATABASE: petclinic
+      MYSQL_USER: petclinic
+      MYSQL_PASSWORD: petclinic
+      MYSQL_ROOT_PASSWORD: petclinic1
+      JASYPT_ENCRYPTOR_PASSWORD: petclinic
+    networks:
+      - petclinic-network
+
+  petclinic:
+    image: spring-petclinic-rest:3.0.2
+    ports:
+      - 9966:9966
+    environment:
+      MYSQL_DATABASE: petclinic
+      MYSQL_USER: petclinic
+      MYSQL_PASSWORD: petclinic
+      JASYPT_ENCRYPTOR_PASSWORD: petclinic
+      MYSQL_HOST: db
+    networks:
+      - petclinic-network
+    depends_on: 
+      - db
+    restart: on-failure:5
+
+networks:
+  petclinic-network:
+    driver: bridge
