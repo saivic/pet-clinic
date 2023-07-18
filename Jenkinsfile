@@ -12,6 +12,15 @@ pipeline {
         path = "${mavenHome}/bin:${dockerHome}/bin:${env.PATH}"
     }
     stages {
+        stage('Info') {
+            steps {
+                echo 'Starting the pipeline'
+                echo "Maven home: ${mavenHome}"
+                echo "Docker home: ${dockerHome}"
+                echo "PATH: ${path}"
+                echo "$env.JOB_NAME"
+            }
+        }
         stage('Compile') {
             steps {
                 sh "mvn clean compile"
@@ -24,12 +33,14 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${dockerHome}/bin/mvn package"
+                dockerImage = docker.build("docker push saivic/petclinicapi:${env.BUILD_NUMBER}")
             }
         }
         stage('Push Docker Image') {
             steps {
-                sh "docker push ${dockerHome}/bin/mvn package"
+                docker.withRegistry('https://registry.hub.docker.com', 'dockercred') {
+                    dockerImage.push("${env.BUILD_NUMBER}")
+                }
             }
         }
         stage('Deploy') {
@@ -37,5 +48,16 @@ pipeline {
                 echo 'Deploying the application'
             }
         }
+    }
+}
+post {
+    always {
+        echo 'This will always run'
+    }
+    success {
+        echo 'This will run only if successful'
+    }
+    failure {
+        echo 'This will run only if failed'
     }
 }
