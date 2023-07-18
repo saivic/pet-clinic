@@ -12,15 +12,6 @@ pipeline {
         path = "${mavenHome}/bin:${dockerHome}/bin:${env.PATH}"
     }
     stages {
-        stage('Info') {
-            steps {
-                echo 'Starting the pipeline'
-                echo "Maven home: ${mavenHome}"
-                echo "Docker home: ${dockerHome}"
-                echo "PATH: ${path}"
-                echo "$env.JOB_NAME"
-            }
-        }
         stage('Compile') {
             steps {
                 sh "mvn clean compile"
