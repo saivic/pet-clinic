@@ -33,13 +33,17 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                dockerImage = docker.build("docker push saivic/petclinicapi:${env.BUILD_NUMBER}")
+                script {
+                    dockerImage = docker.build("saivic/petclinicapi:${env.BUILD_NUMBER}")
+                }
             }
         }
         stage('Push Docker Image') {
             steps {
-                docker.withRegistry('https://registry.hub.docker.com', 'dockercred') {
-                    dockerImage.push("${env.BUILD_NUMBER}")
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockercred') {
+                        dockerImage.push()
+                    }
                 }
             }
         }
